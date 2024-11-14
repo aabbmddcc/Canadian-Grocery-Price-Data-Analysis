@@ -9,14 +9,11 @@ This repository contains the files and code used to analyze grocery price trends
 The repository is organized as follows:
 
 - `data`:
-    - `raw_data`: Contains the original data files as obtained from Project Hammer.
-        - `Canadian Grocery Price Raw Data.csv`: Time-series price data for various grocery items.
-        - `Canadian Grocery Product Data.csv`: Metadata for each product, including details on product type and vendor.
-        - `raw_data.sqlite`: SQLite database with the full dataset, facilitating efficient queries and data extraction.
     - `analysis_data`: Contains cleaned and processed datasets used for specific analyses.
         - `average_price_per_item.csv`: Contains average prices per product across all vendors.
         - `price_flow.csv`: Contains data on price changes over time for each product.
         - `vender_count.csv`: Shows the count of unique products available from each vendor.
+
 -  `script`
     - `data_analysis.sqbpro`: SQL code used for extracting and processing data from the SQLite database. This file includes queries that filter, clean, and structure the data for analysis. Files in `analysis_data` gains from here.
 - `paper`: Contains the files used to generate the final report.
@@ -32,6 +29,8 @@ Aspects of the code were written with the help of the auto-complete tool. Some c
 ## Methodology
 
 ### Data Source
+
+The raw dataset is too large to include in this repository. You can download it from the link provided in the following line:
 
 The data was sourced from Project Hammer, an initiative to improve transparency and competition in the Canadian grocery sector. For more information, visit [Project Hammer](https://jacobfilipp.com/hammer/).
 
