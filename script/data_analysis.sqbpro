@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="raw_data.sqlite" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2167"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="product" custom_title="0" dock_id="1" table="4,7:mainproduct"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000011d00ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1*">SELECT COUNT(DISTINCT product_name) AS unique_products
+FROM product;
+
+SELECT product_name, 
+       units,
+       current_price AS price_per_item
+FROM product
+JOIN raw ON product.id = raw.product_id
+WHERE units LIKE '($% per item)';
+
+SELECT product_name, 
+       AVG(current_price) AS avg_price_per_item
+FROM product
+JOIN raw ON product.id = raw.product_id
+WHERE units LIKE '($% per item)'
+GROUP BY product_name;
+
+SELECT units,
+       AVG(current_price) AS avg_price
+FROM product
+JOIN raw ON product.id = raw.product_id
+WHERE units LIKE '($%'
+GROUP BY units;
+
+SELECT vendor, COUNT(DISTINCT product_name) AS product_count
+FROM product
+GROUP BY vendor;
+
+SELECT product.id, product.product_name, product.units, product.vendor, raw.current_price
+FROM product
+LEFT JOIN raw ON product.id = raw.product_id
+WHERE product.product_name IS NULL 
+   OR product.units IS NULL 
+   OR product.vendor IS NULL
+   OR raw.current_price IS NULL;
+   
+WITH price_over_time AS (
+    SELECT product.product_name, raw.current_price, raw.nowtime,
+           ROW_NUMBER() OVER (PARTITION BY raw.product_id ORDER BY raw.nowtime ASC) AS start_row,
+           ROW_NUMBER() OVER (PARTITION BY raw.product_id ORDER BY raw.nowtime DESC) AS end_row
+    FROM product
+    JOIN raw ON product.id = raw.product_id
+)
+SELECT product_name, 
+       MAX(CASE WHEN start_row = 1 THEN current_price END) AS start_price,
+       MAX(CASE WHEN end_row = 1 THEN current_price END) AS end_price
+FROM price_over_time
+GROUP BY product_name
+HAVING start_price IS NOT NULL AND end_price IS NOT NULL;</sql><current_tab id="0"/></tab_sql></sqlb_project>
